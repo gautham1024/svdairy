@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Int      // whole rupees
+  packSize    String   // e.g. "500 ml"
+  imageUrl    String
+  imageId     String?  // S3 object key, used when deleting
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Settings {
+  id             Int    @id @default(1) // always a single row
+  whatsappNumber String @default("")
+  phone          String @default("")
+  address        String @default("")
+  facebookUrl    String @default("")
+  instagramUrl   String @default("")
+  youtubeUrl     String @default("")
+}
+
+// Added for admin item 5: one row each time someone taps Buy.
+// We cannot know who they are before WhatsApp opens, so we store product + time only.
+model Click {
+  id          Int      @id @default(autoincrement())
+  productId   Int?
+  productName String
+  createdAt   DateTime @default(now())
+}
