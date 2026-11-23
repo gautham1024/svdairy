@@ -18,9 +18,6 @@ Price: ₹${p.price}
 Please let me know the availability and delivery details. Thank you!`;
 }
 
-// Cloudinary transform keeps images small
-const optimise = (url) => url.replace('/upload/', '/upload/f_auto,q_auto,w_600/');
-
 export default function ProductCard({ product, whatsappNumber, index = 0 }) {
   function handleBuy() {
     // Log first, never block the customer if it fails
@@ -33,10 +30,11 @@ export default function ProductCard({ product, whatsappNumber, index = 0 }) {
   }
 
   return (
-    <article className="card" style={{ '--i': index }}>
+    <article className="card" style={{ '--i': index % 3 }}>
       <div className="card-media">
         <span className="chip">{product.packSize}</span>
-        <img src={optimise(product.imageUrl)} alt={product.name} loading="lazy" className="card-img" />
+        <img src={product.imageUrl} alt={product.name} loading="lazy" className="card-img"
+             onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} />
       </div>
       <div className="card-body">
         <h3>{product.name}</h3>
@@ -44,7 +42,7 @@ export default function ProductCard({ product, whatsappNumber, index = 0 }) {
         <div className="card-foot">
           <span className="price">₹{product.price.toLocaleString('en-IN')}</span>
           <button className="btn btn-whatsapp btn-sm" onClick={handleBuy} disabled={!whatsappNumber}>
-            <WhatsAppIcon /> Buy on WhatsApp
+             Buy
           </button>
         </div>
       </div>

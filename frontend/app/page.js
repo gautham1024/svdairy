@@ -10,9 +10,11 @@ import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import { whatsappLink } from '../components/ProductCard';
 import { WhatsAppIcon } from '../components/Icons';
+import useReveal from '../components/Reveal';
 
 export default function Home() {
   const [settings, setSettings] = useState(null);
+  useReveal();
 
   // Settings are shared by Hero, Products (WhatsApp link) and Contact, so fetch once here
   useEffect(() => {

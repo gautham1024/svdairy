@@ -42,7 +42,10 @@ const cookieOpts = {
 
 router.post('/login', loginLimiter, (req, res) => {
   const { email, password } = req.body || {};
-  const ok = safeEqual(email, process.env.ADMIN_EMAIL) & safeEqual(password, process.env.ADMIN_PASSWORD);
+  // Both compares run before combining, so timing doesn't reveal which one failed
+  const emailOk = safeEqual(email, process.env.ADMIN_EMAIL);
+  const passOk = safeEqual(password, process.env.ADMIN_PASSWORD);
+  const ok = emailOk && passOk;
   if (!ok) return res.status(401).json({ error: 'Wrong email or password' });
   const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '8h' });
   res.cookie('token', token, cookieOpts).json({ ok: true });

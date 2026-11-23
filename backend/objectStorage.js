@@ -1,21 +1,21 @@
 const crypto = require('crypto');
 const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
-const endpoint = process.env.NEON_S3_ENDPOINT;
-const bucket = process.env.NEON_S3_BUCKET;
+const endpoint = process.env.AWS_ENDPOINT_URL_S3;
+const bucket = process.env.S3_BUCKET;
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+const configured = Boolean(endpoint && bucket && accessKeyId && secretAccessKey);
 
-if (!endpoint || !bucket) {
-  console.warn('S3 object storage is not configured: set NEON_S3_ENDPOINT and NEON_S3_BUCKET');
+if (!configured) {
+  console.warn('S3 object storage is not configured: set AWS_ENDPOINT_URL_S3, S3_BUCKET, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY');
 }
 
 const s3 = new S3Client({
-  region: process.env.NEON_S3_REGION || 'auto',
+  region: process.env.AWS_REGION || 'auto',
   endpoint,
-  forcePathStyle: process.env.NEON_S3_FORCE_PATH_STYLE !== 'false',
-  credentials: {
-    accessKeyId: process.env.NEON_S3_ACCESS_KEY_ID,
-    secretAccessKey: process.env.NEON_S3_SECRET_ACCESS_KEY,
-  },
+  forcePathStyle: process.env.S3_FORCE_PATH_STYLE !== 'false',
+  credentials: { accessKeyId, secretAccessKey },
 });
 
 const extensionFor = (mimeType) => ({
@@ -25,7 +25,7 @@ const extensionFor = (mimeType) => ({
 }[mimeType]);
 
 async function uploadBuffer(buffer, mimeType) {
-  if (!endpoint || !bucket) throw new Error('S3 object storage is not configured');
+  if (!configured) throw new Error('S3 object storage is not configured');
 
   const extension = extensionFor(mimeType);
   if (!extension) throw new Error('Unsupported image type');
@@ -38,7 +38,7 @@ async function uploadBuffer(buffer, mimeType) {
     ContentType: mimeType,
   }));
 
-  const publicBase = (process.env.NEON_S3_PUBLIC_URL || '').replace(/\/$/, '');
+  const publicBase = (process.env.S3_PUBLIC_URL || '').replace(/\/$/, '');
   const url = publicBase
     ? `${publicBase}/${key}`
     : `${endpoint.replace(/\/$/, '')}/${bucket}/${key}`;
@@ -47,7 +47,7 @@ async function uploadBuffer(buffer, mimeType) {
 }
 
 async function deleteImage(key) {
-  if (!key || !bucket) return;
+  if (!key || !configured) return;
   await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
 }
 
