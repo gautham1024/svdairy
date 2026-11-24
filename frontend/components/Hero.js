@@ -8,6 +8,12 @@ export default function Hero({ settings }) {
     : null;
   return (
     <section id="home" className="hero">
+      <div className="hero-media" aria-hidden="true">
+        <video className="hero-video" autoPlay loop muted playsInline preload="auto" poster="/videos/hero-poster.webp">
+          <source src="/videos/hero-loop.webm" type="video/webm" />
+          <source src="/videos/hero-loop.mp4" type="video/mp4" />
+        </video>
+      </div>
       <div className="container hero-grid">
         <div className="hero-copy">
           <span className="eyebrow">{siteConfig.eyebrow}</span>

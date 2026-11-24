@@ -146,11 +146,25 @@ a { color: var(--green-700); }
     radial-gradient(900px 500px at 80% 40%, rgba(245, 197, 60, 0.16), transparent 60%),
     linear-gradient(160deg, var(--green-950), var(--green-800) 60%, var(--green-700));
 }
-.hero::before { /* soft golden dot pattern */
-  content: ''; position: absolute; inset: 0; opacity: 0.7; pointer-events: none;
-  background: radial-gradient(rgba(248, 216, 106, 0.16) 1.4px, transparent 1.6px) 0 0 / 26px 26px;
-  -webkit-mask-image: linear-gradient(180deg, #000, transparent 85%); mask-image: linear-gradient(180deg, #000, transparent 85%);
+.hero { min-height: calc(100svh - 68px); display: flex; align-items: center; } /* 68px = sticky navbar */
+.hero > .container { width: 100%; }
+/* Full-bleed video; the green gradient above stays as the backdrop until the first frame paints */
+.hero-media { position: absolute; inset: 0; background: url('/videos/hero-poster.webp') center / cover; }
+.hero-video { width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0); }
+.hero-media::after { /* dark scrim: heavier on the text side and bottom so copy/CTAs stay crisp */
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 37, 16, 0.55) 0%, rgba(8, 37, 16, 0.35) 40%, rgba(8, 37, 16, 0.75) 100%),
+    linear-gradient(90deg, rgba(8, 37, 16, 0.6), transparent 70%);
 }
+/* Scroll-driven parallax + fade-out, compositor-only (transform/opacity); browsers without support just skip it */
+@supports (animation-timeline: view()) {
+  .hero-video, .hero-grid { animation: linear both; animation-timeline: view(); animation-range: exit 0% exit 100%; }
+  .hero-video { animation-name: hero-zoom; }
+  .hero-grid { animation-name: hero-out; }
+}
+@keyframes hero-zoom { to { transform: translateY(18%) scale(1.08); } }
+@keyframes hero-out { to { opacity: 0; transform: translateY(-60px); } }
 .hero-grid { position: relative; display: grid; gap: 28px; align-items: center; }
 .hero-art { position: relative; order: -1; display: grid; place-items: center; }
 .halo {
@@ -350,6 +364,7 @@ input[type='file'] { padding: 8px; background: var(--cream); border-style: dashe
   .hero-wave { height: 100px; }
 
   .grid { grid-template-columns: repeat(3, 1fr); }
+
   .about-grid { grid-template-columns: 1fr 1fr; gap: 56px; }
   .contact-grid { grid-template-columns: 1fr 1.1fr; }
   .contact-grid.no-map { grid-template-columns: minmax(0, 640px); justify-content: center; }
@@ -362,5 +377,6 @@ input[type='file'] { padding: 8px; background: var(--cream); border-style: dashe
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .hero-copy > * { opacity: 1; }
+  .hero-video { display: none; } /* poster background on .hero-media shows instead */
   .reveal { opacity: 1; transform: none; }
 }
