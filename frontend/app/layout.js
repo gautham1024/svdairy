@@ -20,7 +20,6 @@ const jsonLd = {
   '@type': 'LocalBusiness',
   name: siteConfig.businessName,
   description: siteConfig.tagline,
-  openingHours: siteConfig.hours,
 };
 
 export default function RootLayout({ children }) {

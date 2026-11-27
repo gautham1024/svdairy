@@ -12,8 +12,6 @@ const siteConfig = {
     { icon: '🌿', title: 'Hygienic', text: 'Clean handling from farm to doorstep.' },
     { icon: '🐄', title: 'Local farm', text: 'Sourced from farms close to you.' },
   ],
-  fssai: 'FSSAI No: [TBD]',
-  hours: 'Mon–Sun: 6:00 AM – 8:00 PM', // [TBD]
   mapEmbedUrl: '', // [TBD] Google Maps embed URL
 };
 export default siteConfig;

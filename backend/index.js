@@ -4,6 +4,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const prisma = require('./db');
+const { hashPassword } = require('./password');
 
 const app = express();
 app.set('trust proxy', 1); // Render sits behind a proxy; needed for rate limiting + secure cookies
@@ -25,6 +26,11 @@ app.use((err, req, res, next) => {
 async function start() {
   // Make sure the single settings row exists
   await prisma.settings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } });
+  // First run: seed the admin login from env; after that it is changed from the admin panel
+  if (!(await prisma.admin.findUnique({ where: { id: 1 } }))) {
+    if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) throw new Error('Set ADMIN_EMAIL and ADMIN_PASSWORD for the first run');
+    await prisma.admin.create({ data: { id: 1, email: process.env.ADMIN_EMAIL.trim().toLowerCase(), passwordHash: hashPassword(process.env.ADMIN_PASSWORD) } });
+  }
   app.listen(process.env.PORT || 4000, () => console.log('API running on port', process.env.PORT || 4000));
 }
 start();

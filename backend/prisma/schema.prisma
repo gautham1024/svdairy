@@ -26,13 +26,38 @@ model Settings {
   facebookUrl    String @default("")
   instagramUrl   String @default("")
   youtubeUrl     String @default("")
+  fssaiNumber    String @default("") // blank = hidden on site
+  hours          String @default("") // blank = hidden on site
+  maxCartQty     Int    @default(10) // per product line
 }
 
-// Added for admin item 5: one row each time someone taps Buy.
-// We cannot know who they are before WhatsApp opens, so we store product + time only.
+model Admin {
+  id           Int    @id @default(1) // single row
+  email        String
+  passwordHash String // scrypt "salt:hash"
+}
+
+// One row per cart checkout (WhatsApp order tap)
 model Click {
-  id          Int      @id @default(autoincrement())
-  productId   Int?
-  productName String
-  createdAt   DateTime @default(now())
+  id        Int         @id @default(autoincrement())
+  total     Int         @default(0)
+  address   String? // optional, only if the visitor allowed location
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime    @default(now())
+  items     ClickItem[]
+
+  @@index([createdAt])
+}
+
+model ClickItem {
+  id          Int    @id @default(autoincrement())
+  clickId     Int
+  click       Click  @relation(fields: [clickId], references: [id], onDelete: Cascade)
+  productId   Int? // null once the product is deleted
+  productName String // "Milk (500 ml)", kept for history and filtering
+  qty         Int
+  price       Int
+
+  @@index([productName])
 }

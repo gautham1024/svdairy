@@ -33,10 +33,12 @@ export default function Contact({ settings }) {
                 <div><strong>Phone</strong><a href={telHref}>{s.phone}</a></div>
               </div>
             )}
-            <div className="contact-item">
-              <span className="trust-icon" aria-hidden="true">🕒</span>
-              <div><strong>Hours</strong>{siteConfig.hours}</div>
-            </div>
+            {s.hours && (
+              <div className="contact-item">
+                <span className="trust-icon" aria-hidden="true">🕒</span>
+                <div><strong>Hours</strong>{s.hours}</div>
+              </div>
+            )}
             {socials.length > 0 && (
               <div className="contact-item">
                 <span className="trust-icon" aria-hidden="true">💛</span>
@@ -54,7 +56,7 @@ export default function Contact({ settings }) {
             )}
             {s.whatsappNumber && (
               <a className="btn btn-whatsapp" target="_blank" rel="noopener noreferrer"
-                 href={whatsappLink(s.whatsappNumber, `Hello ${siteConfig.businessName}! 👋`)}>
+                 href={whatsappLink(s.whatsappNumber, `Hello ${siteConfig.businessName}!`)}>
                 <WhatsAppIcon /> Chat on WhatsApp
               </a>
             )}

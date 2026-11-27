@@ -4,7 +4,7 @@ import { WhatsAppIcon } from './Icons';
 
 export default function Hero({ settings }) {
   const wa = settings?.whatsappNumber
-    ? whatsappLink(settings.whatsappNumber, `Hello ${siteConfig.businessName}! 👋`)
+    ? whatsappLink(settings.whatsappNumber, `Hello ${siteConfig.businessName}!`)
     : null;
   return (
     <section id="home" className="hero">

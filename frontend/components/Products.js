@@ -3,7 +3,17 @@ import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import ProductCard from './ProductCard';
 
-export default function Products({ settings }) {
+// Each size is its own DB row; rows with the same name share one card, cheapest size first
+function groupByName(products) {
+  const groups = new Map();
+  for (const p of products) {
+    const key = p.name.trim().toLowerCase();
+    groups.set(key, [...(groups.get(key) || []), p]);
+  }
+  return [...groups.values()].map((g) => g.sort((a, b) => a.price - b.price));
+}
+
+export default function Products({ cart, onAdd, maxQty }) {
   const [products, setProducts] = useState(null);
   const [error, setError] = useState('');
 
@@ -28,8 +38,8 @@ export default function Products({ settings }) {
         {products && products.length === 0 && <p className="muted empty">Products coming soon. 🥛</p>}
         {products && products.length > 0 && (
           <div className="grid">
-            {products.map((p, i) => (
-              <ProductCard key={p.id} product={p} index={i} whatsappNumber={settings?.whatsappNumber} />
+            {groupByName(products).map((variants, i) => (
+              <ProductCard key={variants[0].id} variants={variants} index={i} cart={cart} onAdd={onAdd} maxQty={maxQty} />
             ))}
           </div>
         )}
