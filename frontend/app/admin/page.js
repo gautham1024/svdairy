@@ -99,7 +99,7 @@ function Dashboard({ onLogout }) {
           <button className="btn btn-outline btn-sm" style={{ marginBottom: 20 }} onClick={() => setTab('products')}>← Back</button>
         ) : (
           <div className="tabs">
-            {[['products', 'Products'], ['clicks', 'WhatsApp clicks']].map(([t, label]) => (
+            {[['products', 'Products'], ['clicks', 'Analytics']].map(([t, label]) => (
               <button key={t} className={tab === t ? 'tab active' : 'tab'} onClick={() => setTab(t)}>{label}</button>
             ))}
           </div>

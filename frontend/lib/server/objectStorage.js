@@ -1,5 +1,5 @@
-const crypto = require('crypto');
-const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+import crypto from 'crypto';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 const endpoint = process.env.AWS_ENDPOINT_URL_S3;
 const bucket = process.env.S3_BUCKET;
@@ -24,7 +24,7 @@ const extensionFor = (mimeType) => ({
   'image/webp': 'webp',
 }[mimeType]);
 
-async function uploadBuffer(buffer, mimeType) {
+export async function uploadBuffer(buffer, mimeType) {
   if (!configured) throw new Error('S3 object storage is not configured');
 
   const extension = extensionFor(mimeType);
@@ -46,9 +46,8 @@ async function uploadBuffer(buffer, mimeType) {
   return { url, key };
 }
 
-async function deleteImage(key) {
+export async function deleteImage(key) {
   if (!key || !configured) return;
   await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
 }
 
-module.exports = { uploadBuffer, deleteImage };
